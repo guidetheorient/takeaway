@@ -22,7 +22,6 @@ const devWebpackConfig = merge(baseWebpackConfig, {
       const seller = appData.seller;
       const goods = appData.goods;
       const ratings = appData.ratings;
-
       app.get('/api/seller',function(req,res){
         res.json({
           errno: 0,
