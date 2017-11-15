@@ -1,10 +1,8 @@
 <template>
   <div id="app">
-    <div class="header">
-      1
-    </div>
+    <v-header></v-header>
     <div class="tab">
-      2
+      23
     </div>
     <div class="content">
       3
@@ -15,10 +13,9 @@
 <script>
 import header from './components/header/header';
 
-
 export default {
   components: {
-    header
+    'v-header': header
   }
 };
 </script>
