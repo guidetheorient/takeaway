@@ -1,6 +1,6 @@
 <template>
   <div>
-    header
+    seller
   </div>
 </template>
 
@@ -9,8 +9,6 @@ export default {
 };
 </script>
 
-<style scoped lang="scss">
-  div{
-    font-size: 0.16rem;
-  }
+<style lang="scss" scoped>
+
 </style>

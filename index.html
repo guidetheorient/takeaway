@@ -10,5 +10,12 @@
   <body>
     <div id="app"></div>
     <!-- built files will be auto injected -->
+    <script>
+      var dpr = window.devicePixelRatio
+      var width = document.documentElement.clientWidth
+      console.log(width,dpr)
+      document.querySelector('html').style.fontSize = (100 * width / (750 / dpr)) +'px';
+      document.body.style.fontSize = '16px';
+    </script>
   </body>
 </html>
