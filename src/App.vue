@@ -1,7 +1,7 @@
 <template>
   <div>
     <v-header></v-header>
-    <ul class="tab">
+    <ul class="tab border-1px">
       <li class="tab-item">
         <router-link to="/goods">商品</router-link>
       </li>
@@ -26,13 +26,15 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
+@import "./common/scss/_mixin";
 .tab {
   display: flex;
   justify-content: center;
   width: 100%;
   height: .4rem;
   line-height: .4rem;
+  @include border-1px(rgba(7,17,27,0.1));
   .tab-item {
     flex: 1;
     text-align: center;
