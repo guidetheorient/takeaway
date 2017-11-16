@@ -19,7 +19,23 @@
 <script>
 import header from "./components/header/header";
 
+const ERR_OK = 0;
+
 export default {
+  data() {
+    return {
+      seller: {}
+    };
+  },
+  created() {
+    this.$http.get("/api/seller").then(response => {
+      response = response.body;
+      if (response.errno === ERR_OK) {
+        this.seller = response.data;
+        console.log(this.seller);
+      }
+    });
+  },
   components: {
     "v-header": header
   }
@@ -32,8 +48,8 @@ export default {
   display: flex;
   justify-content: center;
   width: 100%;
-  height: .4rem;
-  line-height: .4rem;
+  height: 0.4rem;
+  line-height: 0.4rem;
   @include border-1px(rgba(7,17,27,0.1));
   .tab-item {
     flex: 1;
@@ -42,8 +58,8 @@ export default {
       display: block;
       font-size: 14px;
       color: rgb(77, 85, 93);
-      &.active{
-        color: rgb(240,20,20)
+      &.active {
+        color: rgb(240, 20, 20);
       }
     }
   }

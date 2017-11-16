@@ -1,11 +1,25 @@
-@media (-webkit-min-device-pixel-ratio: 1.5),(min-device-pixel-ratio: 1.5){
+@media (-webkit-min-device-pixel-ratio: 1.5),
+       (-moz-min-device-pixel-ratio: 1.5),
+       (min-resolution: 1.5dppx){
   .border-1px{
     &::after{
       transform: scaleY(0.7);
     }
   }
 }
-@media (-webkit-min-device-pixel-ratio: 2),(min-device-pixel-ratio: 2){
+@media (-webkit-min-device-pixel-ratio: 2),
+       (-moz-min-device-pixel-ratio: 2),
+       (min-resolution: 2dppx),
+       (min-resolution: 192dpi){
+  .border-1px{
+    &::after{
+      transform: scaleY(0.5);
+    }
+  }
+}
+@media (-webkit-min-device-pixel-ratio: 3),
+       (-moz-min-device-pixel-ratio: 3),
+       (min-resolution: 3dppx){
   .border-1px{
     &::after{
       transform: scaleY(0.5);
