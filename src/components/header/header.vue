@@ -29,27 +29,66 @@
     <div class="background">
       <img :src="seller.avatar" alt="">
     </div>
-    <div class="detail" v-show="detailShow">
-
-    </div>
+    <transition name="fade">
+      <div class="detail" v-show="detailShow">
+        <div class="detail-wrapper clearfix">
+          <div class="detail-main">
+            <h1 class="name">{{seller.name}}</h1>
+            <div class="star-wrapper">
+              <star :size="48" :score="seller.score"></star>  
+            </div>
+            <div class="title">
+              <div class="line"></div>
+              <div class="text">优惠信息</div>
+              <div class="line"></div>
+            </div>
+            <ul v-if="seller.supports" class="supports">
+              <li v-for="(item, index) in seller.supports" :key="index" class="support-item">
+                <span class="icon" :class="classMap[item.type]"></span>
+                <span class="text">{{item.description}}</span>
+              </li>
+            </ul>
+            <div class="title">
+              <div class="line"></div>
+              <div class="text">商家公告</div>
+              <div class="line"></div>
+            </div>
+            <div class="bulletin">
+              <p>{{seller.bulletin}}</p>
+            </div>
+          </div>
+        </div>
+        <div class="detail-close" @click="closeDetail">
+          <i class="icon-close"></i>
+        </div>
+      </div>
+    </transition>
   </div>
 </template>
 
 <script>
+import star from "../star/star";
+
 export default {
+  components: {
+    star
+  },
   props: {
     seller: {
       type: Object
     }
   },
-  data(){
-    return{
-      detailShow:false
-    }
+  data() {
+    return {
+      detailShow: false
+    };
   },
-  methods:{
-    showDetail(){
-      this.detailShow = true
+  methods: {
+    showDetail() {
+      this.detailShow = true;
+    },
+    closeDetail() {
+      this.detailShow = false;
     }
   },
   created() {
@@ -187,7 +226,7 @@ export default {
       font-size: 0.1rem;
     }
   }
-  .background{
+  .background {
     position: absolute;
     left: 0;
     top: 0;
@@ -195,19 +234,116 @@ export default {
     bottom: 0;
     z-index: -1;
     overflow: hidden;
-    img{
+    img {
       width: 100%;
       filter: blur(10px);
     }
   }
-  .detail{
+  .detail {
     position: fixed;
     z-index: 10;
     left: 0;
     top: 0;
     right: 0;
     bottom: 0;
+    overflow: auto;
     background-color: rgba(7, 17, 27, 0.8);
+    -webkit-backdrop-filter: blur(10px);
+    &.fade-enter-active,&.fade-leave-active{
+      transition: all 0.5s;
+    }
+    &.fade-enter,&.fade-leave-to{
+      opacity: 0;
+    }
+    .detail-wrapper {
+      min-height: 100%;
+      width: 100%;
+      .detail-main {
+        margin-top: 0.64rem;
+        padding-bottom: 0.64rem;
+        .name {
+          line-height: 0.16rem;
+          text-align: center;
+          font-size: 0.16rem;
+          font-weight: 700;
+        }
+        .star-wrapper {
+          margin-top: 0.16rem;
+          text-align: center;
+        }
+        .title {
+          display: flex;
+          align-items: center;
+          padding: 0.28rem 0.36rem 0.24rem 0.36rem;
+          .line {
+            flex: 1;
+            height: 1px;
+            background-color: rgba(255, 255, 255, 0.2);
+          }
+          .text {
+            padding: 0 0.12rem;
+            font-size: 0.14rem;
+            font-weight: 700;
+          }
+        }
+        .supports {
+          padding: 0 0.48rem;
+          .support-item {
+            margin-bottom: 0.12rem;
+            font-size: 0;
+            &:last-child {
+              margin-bottom: 0;
+            }
+            .icon {
+              display: inline-block;
+              margin-right: 0.06rem;
+              vertical-align: top;
+              width: 0.16rem;
+              height: 0.16rem;
+              background-size: 0.16rem;
+              background-repeat: no-repeat;
+              &.decrease {
+                @include bg-img("decrease_1");
+              }
+              &.discount {
+                @include bg-img("discount_1");
+              }
+              &.guarantee {
+                @include bg-img("guarantee_1");
+              }
+              &.invoice {
+                @include bg-img("invoice_1");
+              }
+              &.special {
+                @include bg-img("special_1");
+              }
+            }
+            .text {
+              line-height: 0.16rem;
+              font-size: 0.12rem;
+              font-weight: 200;
+            }
+          }
+        }
+        .bulletin {
+          padding: 0 0.48rem;
+          p {
+            line-height: 0.24rem;
+            font-size: 0.12rem;
+            font-weight: 200;
+          }
+        }
+      }
+    }
+    .detail-close {
+      // position: relative;
+      margin-top: -0.64rem;
+      text-align: center;
+      .icon-close {
+        font-size: 0.32rem;
+        color: rgba(255, 255, 255, 0.5);
+      }
+    }
   }
 }
 </style>
