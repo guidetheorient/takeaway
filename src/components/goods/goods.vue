@@ -29,13 +29,16 @@
                   <span class="now">￥{{food.price}}</span>
                   <span class="old" v-show="food.oldPrice">￥{{food.oldPrice}}</span>
                 </div>
+                <div class="cartcontrol-wrapper">
+                  <cartcontrol :food="food" @increment="_drop"></cartcontrol>
+                </div>
               </div>
             </li>
           </ul>
         </li>
       </ul>
     </div>
-    <shopcart class="shop" :deliveryPrice="seller.deliveryPrice" :minPrice="seller.minPrice"></shopcart>
+    <shopcart ref="shopcart" class="shop" :selectFoods="selectFoods" :deliveryPrice="seller.deliveryPrice" :minPrice="seller.minPrice"></shopcart>
   </div>
 </template>
 
@@ -43,6 +46,7 @@
 import tag from "../tag/tag";
 import BScroll from "better-scroll";
 import shopcart from "../shopcart/shopcart";
+import cartcontrol from "../cartcontrol/cartcontrol";
 
 const ERR_OK = 0;
 
@@ -54,7 +58,8 @@ export default {
   },
   components: {
     tag,
-    shopcart
+    shopcart,
+    cartcontrol
   },
   data() {
     return {
@@ -73,6 +78,17 @@ export default {
         }
       }
       return 0;
+    },
+    selectFoods() {
+      let foods = [];
+      this.goods.map(good => {
+        good.foods.map(food => {
+          if (food.count) {
+            foods.push(food);
+          }
+        });
+      });
+      return foods;
     }
   },
   created() {
@@ -88,6 +104,9 @@ export default {
     });
   },
   methods: {
+    _drop() {
+      this.$refs.shopcart.drop(event.target);
+    },
     selectMenu(index, event) {
       // pc会执行两次
       if (!event._constructed) {
@@ -113,7 +132,8 @@ export default {
         click: true
       });
       this.foodsScroll = new BScroll(this.$refs["foods-wrapper"], {
-        probeType: 3
+        probeType: 3,
+        click: true
       });
       this.foodsScroll.on("scroll", pos => {
         this.scrollY = Math.abs(Math.round(pos.y));
@@ -202,6 +222,7 @@ export default {
           }
         }
         .content {
+          position: relative;
           flex: 1;
           margin-left: 0.1rem;
           .name {
@@ -244,6 +265,11 @@ export default {
               font-weight: 700;
               color: rgb(147, 153, 159);
             }
+          }
+          .cartcontrol-wrapper {
+            position: absolute;
+            right: 0;
+            bottom: 0;
           }
         }
       }

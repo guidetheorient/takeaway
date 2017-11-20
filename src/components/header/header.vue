@@ -302,7 +302,7 @@ export default {
               vertical-align: top;
               width: 0.16rem;
               height: 0.16rem;
-              background-size: 0.16rem;
+              background-size: 0.16rem 0.16rem;
               background-repeat: no-repeat;
               &.decrease {
                 @include bg-img("decrease_1");

@@ -9,13 +9,20 @@
           <div :class="{number: totalCount > 0}">{{totalCount}}</div>
         </div>
         <div class="price" :class="{highlight: totalPrice > 0}">￥{{totalPrice}}</div>
-        <div class="desc">另需配送费￥{{deliveryPrice}}元</div>
+        <div v-show="deliveryPrice > 0" class="desc">另需配送费￥{{deliveryPrice}}元</div>
       </div>
       <div class="content-right">
         <div class="pay" :class="payClass">
           {{payDesc}}
         </div>
       </div>
+    </div>
+    <div class="ball-container">
+      <transition-group name="drop" @before-enter="beforeEnter" @enter="enter" @after-enter="afterEnter">
+        <div v-for="(ball, index) in balls" v-show="ball.show" class="ball" :key="index">
+          <div class="inner inner-hook"></div>
+        </div>
+      </transition-group>
     </div>
   </div>
 </template>
@@ -38,6 +45,28 @@ export default {
       type: Number,
       default: 0
     }
+  },
+  data() {
+    return {
+      balls: [
+        {
+          show: false
+        },
+        {
+          show: false
+        },
+        {
+          show: false
+        },
+        {
+          show: false
+        },
+        {
+          show: false
+        }
+      ],
+      dropBall: []
+    };
   },
   computed: {
     totalPrice() {
@@ -69,6 +98,62 @@ export default {
         return "not-enough";
       } else {
         return "enough";
+      }
+    }
+  },
+  methods: {
+    // 由goods.vue调用
+    drop(el) {
+      // 得到没做动画的第一个ball
+      for (let i = 0; i < this.balls.length; i++) {
+        let ball = this.balls[i];
+        if (!ball.show) {
+          // v-show触发动画
+          ball.show = true;
+          ball.el = el;
+          this.dropBall.push(ball);
+          return;
+        }
+      }
+    },
+    // 找出所有show:true的ball
+    beforeEnter(el) {
+      let count = this.balls.length;
+      let fontSize = parseInt(document.documentElement.style.fontSize);
+      while (count--) {
+        let ball = this.balls[count];
+        if (ball.show) {
+          let rect = ball.el.getBoundingClientRect();
+          console.log(rect.left);
+          let x = rect.left - 0.32 * fontSize;
+          let y = -(window.innerHeight - rect.top - (0.22 + 0.16) * fontSize);
+          el.style.display = '';
+          el.style.webKitTransform = `translate3d(0, ${y}px, 0)`;
+          el.style.transform = `translate3d(0, ${y}px, 0)`;
+          let inner = el.getElementsByClassName('inner-hook')[0];
+          inner.style.webKitTransform = `translate(${x}px, 0, 0)`;
+          inner.style.transform = `translate3d(${x}px, 0, 0)`;
+        }
+      }
+    },
+    enter(el) {
+      // 触发重绘
+      /* eslint-disable no-unused-vars */
+      let rf = el.offsetHeight;
+
+      this.$nextTick(() => {
+        el.style.webKitTransform = 'translate3d(0, 0, 0)';
+        el.style.transform = 'translate3d(0, 0, 0)';
+        let inner = el.getElementsByClassName('inner-hook')[0];
+        inner.style.webKitTransform = 'translate3d(0, 0, 0)';
+        inner.style.transform = 'translate3d(0, 0, 0)';
+      });
+    },
+    afterEnter(el) {
+      let ball = this.dropBall.shift();
+      if (ball) {
+        ball.show = false;
+        el.style.display = 'none';
       }
     }
   }
@@ -171,6 +256,25 @@ export default {
           color: #fff;
         }
       }
+    }
+  }
+  .ball-container{
+    .ball{
+      position: fixed;
+      left: 0.32rem;
+      bottom: 0.22rem;
+      z-index: 200;
+      &.drop-leave-active, &.drop-enter-active{
+        transition: all 0.4s cubic-bezier(0.49, -0.29, 0.75, 0.41);
+        .inner{
+          width: 0.16rem;
+          height: 0.16rem;
+          border-radius: 50%;
+          background-color: rgb(0, 160, 220);
+          transition: all 0.4s;
+        }
+      }
+      
     }
   }
 }
