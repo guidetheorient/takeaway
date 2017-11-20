@@ -241,7 +241,7 @@ export default {
   }
   .detail {
     position: fixed;
-    z-index: 10;
+    z-index: 100;
     left: 0;
     top: 0;
     right: 0;
@@ -249,10 +249,12 @@ export default {
     overflow: auto;
     background-color: rgba(7, 17, 27, 0.8);
     -webkit-backdrop-filter: blur(10px);
-    &.fade-enter-active,&.fade-leave-active{
+    &.fade-enter-active,
+    &.fade-leave-active {
       transition: all 0.5s;
     }
-    &.fade-enter,&.fade-leave-to{
+    &.fade-enter,
+    &.fade-leave-to {
       opacity: 0;
     }
     .detail-wrapper {

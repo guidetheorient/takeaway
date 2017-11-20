@@ -53,7 +53,8 @@ export default {
     }
   },
   components: {
-    tag, shopcart
+    tag,
+    shopcart
   },
   data() {
     return {
@@ -93,9 +94,7 @@ export default {
         return;
       }
       this.foodsScroll.scrollToElement(
-        this.$refs["foods-wrapper"].getElementsByClassName("food-list-hook")[index],
-        300
-      );
+        this.$refs["foods-wrapper"].getElementsByClassName("food-list-hook")[index], 300);
     },
     _calculateHeight() {
       let foodList = this.$refs["foods-wrapper"].getElementsByClassName(
@@ -135,8 +134,8 @@ export default {
   width: 100%;
   overflow: hidden;
   .menu-wrapper {
-    flex: 0 0 80px;
-    width: 80px;
+    flex: 0 0 0.8rem;
+    width: 0.8rem;
     // overflow: auto;
     background-color: #f3f5f7;
     .menu-item {
