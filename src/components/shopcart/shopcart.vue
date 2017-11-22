@@ -1,7 +1,7 @@
 <template>
   <div id="shopcart">
     <div class="content">
-      <div class="content-left">
+      <div class="content-left" @click="toggleList">
         <div class="logo-wrapper">
           <div class="logo" :class="{highlight: totalCount > 0}">
             <span class="icon-shopping_cart"></span>
@@ -11,7 +11,7 @@
         <div class="price" :class="{highlight: totalPrice > 0}">￥{{totalPrice}}</div>
         <div v-show="deliveryPrice > 0" class="desc">另需配送费￥{{deliveryPrice}}元</div>
       </div>
-      <div class="content-right">
+      <div class="content-right" @click="pay">
         <div class="pay" :class="payClass">
           {{payDesc}}
         </div>
@@ -24,11 +24,41 @@
         </div>
       </transition-group>
     </div>
+    <transition name="fold">
+      <div class="shopcart-list" v-show="listShow">
+        <div class="list-header clearfix">
+          <h1 class="title">购物车</h1>
+          <span class="empty" @click="empty">清空</span>
+        </div>
+        <div class="list-content clearfix" ref="list-content">
+          <ul>
+            <li v-for="(food, index) in selectFoods" class="food" :key="index">
+              <span class="name">{{food.name}}</span>
+              <div class="price">
+                <span>￥{{food.price * food.count}}</span>
+              </div>
+              <div class="cartcontrol-wrapper">
+                <cartcontrol :food="food"></cartcontrol>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </transition>
+    <transition name="fade2">
+      <div class="cover" v-show="listShow" @click="hideList"></div>
+    </transition>
   </div>
 </template>
 
 <script>
+import cartcontrol from '../cartcontrol/cartcontrol';
+import BScroll from 'better-scroll';
+
 export default {
+  components: {
+    cartcontrol
+  },
   props: {
     // 选择的商品，计算价格
     selectFoods: {
@@ -65,7 +95,9 @@ export default {
           show: false
         }
       ],
-      dropBall: []
+      dropBall: [],
+      // foodlist折叠
+      fold: true
     };
   },
   computed: {
@@ -99,16 +131,36 @@ export default {
       } else {
         return "enough";
       }
+    },
+    listShow() {
+      if (!this.totalCount) {
+        this.fold = true;
+        return false;
+      }
+      let show = !this.fold;
+      // show为true时初始化better-scroll
+      if (show) {
+        this.$nextTick(() => {
+          if (!this.selectFoodsScroll) {
+            this.selectFoodsScroll = new BScroll(this.$refs['list-content'], {
+              click: true
+            });
+          } else {
+            this.selectFoodsScroll.refresh();
+          }
+        });
+      }
+      return show;
     }
   },
   methods: {
     // 由goods.vue调用
     drop(el) {
-      // 得到没做动画的第一个ball
+      // 将触发drop的元素保存在一个未进行动画的ball中
       for (let i = 0; i < this.balls.length; i++) {
         let ball = this.balls[i];
         if (!ball.show) {
-          // v-show触发动画
+          // v-show触发动画 before-enter,enter,after-enter
           ball.show = true;
           ball.el = el;
           this.dropBall.push(ball);
@@ -116,15 +168,17 @@ export default {
         }
       }
     },
-    // 找出所有show:true的ball
     beforeEnter(el) {
-      let count = this.balls.length;
+      // let count = this.dropBall.length;
+      // let count = this.balls.length;
       let fontSize = parseInt(document.documentElement.style.fontSize);
-      while (count--) {
-        let ball = this.balls[count];
-        if (ball.show) {
+      // while (count--) {
+        let ball = this.dropBall[0];
+        // let ball = this.dropBall[count];
+        // let ball = this.balls[count];
+        // if (ball.show) {
+          // 获取点击位置
           let rect = ball.el.getBoundingClientRect();
-          console.log(rect.left);
           let x = rect.left - 0.32 * fontSize;
           let y = -(window.innerHeight - rect.top - (0.22 + 0.16) * fontSize);
           el.style.display = '';
@@ -133,8 +187,8 @@ export default {
           let inner = el.getElementsByClassName('inner-hook')[0];
           inner.style.webKitTransform = `translate(${x}px, 0, 0)`;
           inner.style.transform = `translate3d(${x}px, 0, 0)`;
-        }
-      }
+        // }
+      // }
     },
     enter(el) {
       // 触发重绘
@@ -151,9 +205,28 @@ export default {
     },
     afterEnter(el) {
       let ball = this.dropBall.shift();
+      // console.log(this.balls.indexOf(ball))
       if (ball) {
         ball.show = false;
         el.style.display = 'none';
+      }
+    },
+    toggleList() {
+      if (this.totalCount) {
+        this.fold = !this.fold;
+      }
+    },
+    empty() {
+      this.selectFoods.map((food) => {
+        food.count = 0;
+      });
+    },
+    hideList() {
+      this.fold = true;
+    },
+    pay() {
+      if (this.totalPrice > 0) {
+        alert(`需要支付￥${this.totalPrice}元`);
       }
     }
   }
@@ -161,6 +234,8 @@ export default {
 </script>
 
 <style lang="scss">
+@import "../../common/scss/mixin.scss";
+
 #shopcart {
   position: fixed;
   left: 0;
@@ -274,7 +349,90 @@ export default {
           transition: all 0.4s;
         }
       }
-      
+    }
+  }
+  .shopcart-list{
+    position: absolute;
+    left: 0;
+    top: 0;
+    z-index: -1;
+    width: 100%;
+    font-size: 0;
+    transform: translate3d(0, -100%, 0);
+    &.fold-enter-active, &.fold-leave-active{
+      transition: all 0.4s;
+    }
+    &.fold-enter, &.fold-leave-to{
+      transform: translate3d(0, 0, 0);
+      z-index: -1;
+      opacity: 0;
+    }
+    .list-header{
+      width: 100%;
+      height: 0.4rem;
+      padding: 0 0.18rem;
+      background-color: #f3f5f7;
+      border-bottom: 1px solid rgba(7, 17, 27, 0.1);
+      .title{
+        float: left;
+        line-height: 0.4rem;
+        font-size: 0.14rem;
+        font-weight: 200;
+        color: rgb(7, 17, 27);
+      }
+      .empty{
+        float: right;
+        line-height: 0.4rem;
+        font-size: 0.12rem;
+        color: rgb(0, 160, 220);
+      }
+    }
+    .list-content{
+      margin-top: -1px;
+      padding: 0 0.18rem;
+      width: 100%;
+      max-height: 2.175rem;
+      background-color: #fff;
+      overflow: hidden;
+      .food{
+        padding: 0.12rem 0;
+        height: 0.48rem;
+        font-size: 0.14rem;
+        @include border-1px(rgba(7,17,27,0.1));
+        .name{
+          // float: left;
+          line-height: 0.24rem;
+          color: rgb(7, 17, 27);
+        }
+        .price{
+          position: absolute;
+          right: 0.9rem;
+          bottom: 0.12rem;
+          line-height: 0.24rem;
+          font-size: 0.14rem;
+          font-weight: 700;
+          color: rgb(240, 20, 20);
+        }
+        .cartcontrol-wrapper{
+          float: right;
+        }
+      }
+    }
+  }
+  .cover{
+    position: fixed;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    background-color: rgba(7, 17, 27, 0.6);
+    -webkit-backdrop-filter: blur(10px);
+    z-index: -2;
+    &.fade2-enter-active, &.fade2-leave-active{
+      transition: opacity 0.4s;
+    }
+    &.fade2-enter, &.fade2-leave-to{
+      opacity: 0;
     }
   }
 }

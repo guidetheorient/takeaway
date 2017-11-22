@@ -104,8 +104,12 @@ export default {
     });
   },
   methods: {
-    _drop() {
-      this.$refs.shopcart.drop(event.target);
+    // nextTick默认传入的event已被清空，要手动传入
+    _drop(target) {
+      // 异步执行下落动画，优化体验
+      this.$nextTick(() => {
+        this.$refs.shopcart.drop(target);
+      });
     },
     selectMenu(index, event) {
       // pc会执行两次
