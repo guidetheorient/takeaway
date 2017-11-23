@@ -3,7 +3,6 @@ export function formatDate(date, formatType) {
     let str = date.getFullYear() + '';
     formatType = formatType.replace(RegExp.$1, str.substr(4 - RegExp.$1.length));
   }
-  console.log(formatType);
   let o = {
     'M+': date.getMonth() + 1,
     'd+': date.getDate(),

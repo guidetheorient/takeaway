@@ -32,7 +32,6 @@ export default {
       response = response.body;
       if (response.errno === ERR_OK) {
         this.seller = response.data;
-        // console.log(this.seller);
       }
     });
   },
@@ -44,6 +43,7 @@ export default {
 
 <style lang="scss">
 @import "./common/scss/mixin";
+
 .tab {
   display: flex;
   justify-content: center;
