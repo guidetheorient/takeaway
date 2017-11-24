@@ -257,10 +257,11 @@ export default {
           font-size: 0;
           .icon-thumb_down, .icon-thumb_up{
             display: inline-block;
+            margin-right: 0.08rem;
+            margin-bottom: 0.04rem;
             vertical-align: bottom;
             line-height: 0.16rem;
             font-size: 0.12rem;
-            margin-right: 0.08rem;
           }
           .icon-thumb_down{
             color: rgb(147, 153, 159);
@@ -272,8 +273,9 @@ export default {
             display: inline-block;
             // vertical-align: top;
             margin-right: 0.08rem;
+            margin-bottom: 0.04rem;
             padding: 0 0.06rem;
-            max-width: 0.5rem;
+            max-width: 0.7rem;
             line-height: 0.16rem;
             font-size: 0.09rem;
             color: rgb(147, 153, 159);

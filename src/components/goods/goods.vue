@@ -171,7 +171,7 @@ export default {
   .menu-wrapper {
     flex: 0 0 0.8rem;
     width: 0.8rem;
-    // overflow: auto;
+    overflow: hidden;
     background-color: #f3f5f7;
     .menu-item {
       display: table;
@@ -182,7 +182,7 @@ export default {
         position: relative;
         z-index: 10;
         background-color: #fff;
-        margin-top: -1px;
+        // margin-top: -1px;
         .text {
           @include border-none();
         }
@@ -209,7 +209,7 @@ export default {
   }
   .foods-wrapper {
     flex: 1;
-    // overflow: auto;
+    overflow: hidden;
     .food-list {
       .title {
         height: 0.26rem;

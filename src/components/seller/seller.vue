@@ -42,7 +42,7 @@
       <div class="seller-img" v-show="seller.pics && seller.pics.length">
         <h3 class="title">商家实景</h3>
         <div class="img-wrapper" ref="img-wrapper">
-          <div class="img-content">
+          <div class="img-content" ref="img-content">
             <img v-for="(item,index) in seller.pics" :src="item" alt="" :key="index">
           </div>
         </div>
@@ -78,16 +78,18 @@ export default {
   },
   computed: {
     markMessage() {
-      if (this.seller.mark) {
-        return '已收藏';
-      } else {
-        return '收藏';
-      }
+      return this.seller.mark ? '已收藏' : '收藏';
     }
   },
   props: {
     seller: {
       type: Object
+    }
+  },
+  watch: {
+    seller: function() {
+      this._initScroll();
+      this._initPicScroll();
     }
   },
   methods: {
@@ -100,23 +102,46 @@ export default {
       } else {
         this.seller.mark = !this.seller.mark;
       }
+    },
+    _initScroll() {
+      if (!this.scroll) {
+        this.$nextTick(() => {
+          this.scroll = new BScroll(this.$refs.seller, {
+            click: true
+          });
+        });
+      } else {
+        this.$nextTick(() => {
+          this.scroll.refresh();
+        });
+      }
+    },
+    _initPicScroll() {
+      if (this.seller.pics && this.seller.pics.length) {
+        let length = this.seller.pics.length;
+        let imgWidth = 1.2;
+        let margin = 0.06;
+        let width = length * (imgWidth + margin) - margin;
+        this.$refs['img-content'].style.width = width + 'rem';
+        if (!this.picScroll) {
+          this.$nextTick(() => {
+            this.picScroll = new BScroll(this.$refs['img-wrapper'], {
+              scrollX: true,
+              eventPassthrough: 'vertical'
+            });
+          });
+        } else {
+          this.picScroll.refresh();
+        }
+      }
     }
   },
-  created() {
+  mounted() {
     this.$nextTick(() => {
-      this.scroll = new BScroll(this.$refs.seller, {
-        click: true
-      });
-      if (this.seller && this.seller.pics.length) {
-        var length = this.seller.pics.length;
-      }
-      let imgContent = this.$refs['img-wrapper'].getElementsByClassName('img-content');
-      imgContent[0].style.width = (length * (1.2 + 0.06) - 0.06) + 'rem';
-      this.$nextTick(() => {
-        this.imgScroll = new BScroll(this.$refs['img-wrapper'], {
-          scrollX: 'true'
-        });
-      });
+      // Code that will run only after the
+      // entire view has been rendered
+      this._initScroll();
+      this._initPicScroll();
     });
   }
 };
@@ -180,7 +205,7 @@ export default {
           line-height: 0.24rem;
           font-size: 0.24rem;
           padding-bottom: 0.04rem;
-          color: rgba(7, 17, 27, 0.4);
+          color: rgba(7, 17, 27, 0.1);
         }
         .mark{
           line-height: 0.1rem;
@@ -219,7 +244,7 @@ export default {
       }
     }
     .bulletin{
-      margin: 0.18rem;
+      margin: 0.18rem 0.18rem 0 0.18rem;
       .title{
         @extend %title;
       }
@@ -234,6 +259,9 @@ export default {
         padding: 0.16rem 0.12rem;
         font-size: 0;
         @include border-1px(rgba(7,17,27,0.1));
+        &:last-child{
+          @include border-none();
+        }
         .tag{
           display: inline-block;
           margin-right: 0.06rem;
