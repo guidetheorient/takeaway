@@ -8,7 +8,7 @@
           <span class="rating-count">({{seller.sellCount}})</span>
           <span class="seller-count">月售{{seller.ratingCount}}单</span>
         </div>
-        <div class="favorite" :class="{on: seller.mark}" @click="toggleMark">
+        <div class="favorite" :class="{on: mark}" @click="toggleMark">
           <div class="icon-favorite"></div>
           <p class="mark">{{markMessage}}</p>
         </div>
@@ -59,15 +59,19 @@
 
 <script>
 import star from "../star/star";
-import Vue from 'vue';
+// import Vue from 'vue';
 import BScroll from 'better-scroll';
 import split from '../split/split';
 import tag from '../tag/tag';
 import shopcart from '../shopcart/shopcart';
+import {saveToLocal, loadFromLocal} from '../../common/js/util';
 
 export default {
   data() {
     return {
+      mark: (() => {
+        return loadFromLocal(this.seller.id, 'favorite', false);
+      })()
     };
   },
   components: {
@@ -78,7 +82,7 @@ export default {
   },
   computed: {
     markMessage() {
-      return this.seller.mark ? '已收藏' : '收藏';
+      return this.mark ? '已收藏' : '收藏';
     }
   },
   props: {
@@ -97,11 +101,12 @@ export default {
       if (!event._constructed) {
         return;
       }
-      if (!this.seller.mark) {
-        Vue.set(this.seller, 'mark', true);
+      if (!this.mark) {
+        this.mark = true;
       } else {
-        this.seller.mark = !this.seller.mark;
+        this.mark = !this.mark;
       }
+      saveToLocal(this.seller.id, "favorite", this.mark);
     },
     _initScroll() {
       if (!this.scroll) {
