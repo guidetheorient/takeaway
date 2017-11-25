@@ -123,6 +123,9 @@ export default {
       this.showFlag = false;
     },
     addToCart() {
+      if (!event._constructed) {
+        return;
+      }
       this.$refs.cartcontrol.increaseCart(event);
     },
     emitTogoods() {
